@@ -8,7 +8,7 @@ Paginated apis return an object like: {"itemsPerPage": 25, "items": [...], "tota
 import { Protofy, z } from 'protolib/base'
 import { Objects } from 'app/bundles/objects'
 import { XStack, Paragraph } from "@my/ui"
-import { DataView, DataTable2, API, PaginatedDataSSR, SectionBox } from "protolib"
+import { DataView, DataTable2, API, PaginatedDataSSR, SectionBox, SelectList } from "protolib"
 import { ServiceButtons } from '../components/ServiceButtons'
 import { ServiceStatus } from '../components/ServiceStatus'
 import { useState, useEffect } from 'react';
@@ -16,6 +16,7 @@ import { useSubscription } from 'mqtt-react-hooks';
 import { ServiceModel } from '../objects/service'
 import { AdminPage } from 'protolib'
 import { Save, HardHat } from '@tamagui/lucide-icons'
+import React from 'react'
 
 const isProtected = Protofy("protected", false)
 const {name, prefix} = Objects.service.getApiOptions()
@@ -138,6 +139,7 @@ export function ListContainersPage({ initialElements, pageSession }) {
         item: '',
         editFile: ''
     }
+    const typeArray = [{status:'stopped'}]
     return (<AdminPage title="Services" pageSession={pageSession}>
         {visible ? (
             <SectionBox mt="$5" width={'1100px'} color="yellow" bubble={true} gradient={true} borderColor={'yellow'} borderStyle="solid">
@@ -246,7 +248,7 @@ export function ListContainersPage({ initialElements, pageSession }) {
                 {
                     text: "Save all services",
                     icon: Save,
-                    action: async () => { for (const minero of initialElements.data.items) {
+                    action: async () => { minersData?.map(async (minero) => {
                         if (minero.id) {
                             try {
                                 let enabled = await API.get('/api/v1/services/' + minero.id);      
@@ -256,7 +258,7 @@ export function ListContainersPage({ initialElements, pageSession }) {
                                 console.error('Error when making the request to the server:', error);
                             }   
                         }
-                        } },
+                        }) },
                     isVisible: () => true, 
                     menus: ["bulk"]
                 }

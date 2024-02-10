@@ -8,7 +8,7 @@ Protofy("features", {
 
 export const BaseServiceSchema = Schema.object(Protofy("schema", {
 	id: z.string(),
-	status: z.string(),
+	status: z.string().defaultValue('stopped'),
 	enabled: z.boolean()
 }))
 
