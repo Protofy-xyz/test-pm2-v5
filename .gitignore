@@ -55,3 +55,10 @@ apps/api/miner1.stdout-5.log
 apps/api/miner2.js
 apps/api/miner2.stderr-6.log
 apps/api/miner2.stdout-6.log
+apps/api/miner3.stderr-5.log
+apps/api/miner3.stderr-6.log
+apps/api/miner3.stderr-7.log
+apps/api/miner3.stdout-5.log
+apps/api/miner3.stdout-7.log
+apps/api/miner3.stdout-6.log
+apps/api/miner3.js

@@ -245,7 +245,24 @@ export async function StopProcess(app) {
         }
     });
 }
-
+export async function DeleteProcess(app) {
+    app.get('/api/v1/pm2Services/delete/:id', async (req, res) => {
+        const {id} = req.params
+        const scriptFileName = `${id}.js`;
+        try {
+            pm2.delete(scriptFileName, (err, apps) => {
+                if (err) {
+                    res.status(500).send("<h1>500 Internal server error</h1>");
+                } else {
+                    console.log(`Process ${id} deleted`)
+                    res.json(apps);
+                }
+            });
+        } catch (error) {
+            res.status(500).send(error.message);
+        }
+    });
+}
 export function GetStartOptions(name) {
     const script = `setInterval(() => { console.log('Running container contents ${name}');  }, 1000);`;
     const scriptFileName = `${name}.js`;

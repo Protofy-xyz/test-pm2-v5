@@ -56,14 +56,27 @@ export function ListContainersPage({ initialElements, pageSession }) {
                     API.get('/api/v1/pm2Services/stop/' + minero.id)  
                     setPageLoaded(true)
                 } else {
-                    updatedMinero = {
-                        id: minero.id,
-                        status: minero.status,
-                        cpu: !isNaN(cpu) ? cpu : 'N/A',
-                        memory: !isNaN(memory) ? memory : 'N/A', 
-                        enabled: minero.enabled,
-                    };
-                    setPageLoaded(false)
+                    if (minero.status === 'online' && !pageLoaded) {
+                        console.log("entro")
+                        updatedMinero = {
+                            id: minero.id,
+                            status: minero.status,
+                            cpu: !isNaN(cpu) ? cpu : 'N/A',
+                            memory: !isNaN(memory) ? memory : 'N/A', 
+                            enabled: minero.enabled,
+                        };
+                        API.get('/api/v1/pm2Services/start/' + minero.id)  
+                        setPageLoaded(false)
+                    } else {
+                        updatedMinero = {
+                            id: minero.id,
+                            status: minero.status,
+                            cpu: !isNaN(cpu) ? cpu : 'N/A',
+                            memory: !isNaN(memory) ? memory : 'N/A', 
+                            enabled: minero.enabled,
+                        };
+                        setPageLoaded(false)
+                    }
                 }
                 
                 return updatedMinero;
@@ -102,6 +115,8 @@ export function ListContainersPage({ initialElements, pageSession }) {
             }
         }
     };
+    
+    
       
     const realTimeDataTopic = 'real_time_data_topic';
     const { message: realTimeDataMessage } = useSubscription(realTimeDataTopic);
@@ -197,7 +212,7 @@ export function ListContainersPage({ initialElements, pageSession }) {
                                 try {
                                     row = await fetchInitialData();
                                 } catch (error) {
-                                    console.error('Error al obtener datos iniciales:', error);
+                                    console.error('Error obtaining the inital data:', error);
                                 }
                             }
                         };
@@ -249,10 +264,17 @@ export function ListContainersPage({ initialElements, pageSession }) {
             extraFieldsForms={{
                 status: z.union(stopped.map(o => z.literal(o))).after('id')
             }}
+
             model={ServiceModel}
             pageState={pageState}
             dataTableGridProps={{ itemMinWidth: 300, spacing: 20 }}
-        />
+            dataTableListProps = {{onDelete: async (minero) => {
+                var endpoint = minero;
+                var parts = endpoint.split("/");
+                var lastPart = parts[parts.length - 1];
+                await API.get('/api/v1/pm2Services/delete/' + lastPart)
+            }}}
+        />    
     </AdminPage>);
 }
 
